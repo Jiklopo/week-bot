@@ -1,17 +1,30 @@
 import os
-from telebot import TeleBot
+from datetime import datetime, timedelta
+from telebot import TeleBot, types
 
-TOKEN = os.getenv('TOKEN')
+TOKEN = os.getenv('WEEK_BOT_TOKEN')
+SEMESTER_START = datetime.strptime(os.getenv('SEMESTER_START') or '31/08/20 00:00:00', '%d/%m/%y %H:%M:%S')
 bot = TeleBot(TOKEN)
-bot.remove_webhook()
-bot.set_webhook(f"{os.getenv('APP_URL')}/{TOKEN}")
 
 
-@bot.message_handler(commands=['help', 'start'])
-def send_welcome(message):
-    bot.reply_to(message, "Hi, I am ready for work! I will echo any text you send me!")
+def get_current_week():
+    d = datetime.today() + timedelta(hours=6) - SEMESTER_START
+    return f'Текущая неделя: {d.days // 7 + 1}'
 
 
-@bot.message_handler(func=lambda message: True)
-def echo_message(message):
-    bot.reply_to(message, message.text)
+@bot.message_handler(commands="week")
+def week_number(message):
+    bot.reply_to(message, get_current_week())
+
+
+@bot.message_handler(func=lambda msg: True)
+def default_handler(message):
+    bot.reply_to(message, f"Не знаю, что имелось в виду, но\n{get_current_week()}")
+
+
+@bot.inline_handler(lambda query: True)
+def inline_week_number(query):
+    r = types.InlineQueryResultArticle(id='1', title='Номер недели',
+                                       input_message_content=types.InputTextMessageContent(
+                                           message_text=get_current_week()))
+    bot.answer_inline_query(query.id, [r])
