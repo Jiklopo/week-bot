@@ -12,14 +12,9 @@ def get_current_week():
     return f'Текущая неделя: {d.days // 7 + 1}'
 
 
-@bot.message_handler(commands="week")
-def week_number(message):
-    bot.reply_to(message, get_current_week())
-
-
 @bot.message_handler(func=lambda msg: True)
 def default_handler(message):
-    bot.reply_to(message, f"Не знаю, что имелось в виду, но\n{get_current_week()}")
+    bot.reply_to(message, get_current_week())
 
 
 @bot.inline_handler(lambda query: True)
