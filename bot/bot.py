@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta
 from telebot import TeleBot, types
 
-TOKEN = os.getenv('WEEK_BOT_TOKEN')
+TOKEN = os.getenv('TOKEN')
 SEMESTER_START = datetime.strptime(os.getenv('SEMESTER_START') or '31/08/20 00:00:00', '%d/%m/%y %H:%M:%S')
 bot = TeleBot(TOKEN)
 
